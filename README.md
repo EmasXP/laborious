@@ -18,7 +18,7 @@ This project is under development. All features are not implemented yet and the 
 
 ## Example
 
-This example is going to show some of the features of Laborious. We are going to dig deeper later.
+This example is going to show some of the features of Laborious. We are going to dig deeper later. If you feel overwhelmed by this example you can feel safe the we are going to recap all of it in the sections later.
 
 First we need to create the connection:
 
@@ -39,12 +39,12 @@ class User extends \Laborious\Model {
 	protected static $_fields = array(
 		"id",
 		"email",
-		"customer_id",
+		"country_id",
 	);
 
-  	public function get_customer_id()
+  	public function getCountryId()
 	{
-		return $this->customer_id;
+		return $this->country_id;
 	}
 }
 ```
@@ -59,14 +59,14 @@ $user = new User(
 
 print "Email: ".$user->email.", "
 	."username: ".$user->username.", "
-	."customer_id: ".$user->get_customer_id()
+	."country_id: ".$user->getCountryId()
 ```
 
 * We pass the `$db` to the constructor so the model knows the connection to the database if it needs to execute queries.
 * We run a query and fetch one row from the result.
 * We are fetching `email` as a parameter.
 * We are fetching `username` as a parameter. Notice that this field is not defined in the model (but it is in the table), and we can fetch it anyway.
-* We are fetching the `customer_id` by calling the model's method `get_customer_id()` what we defined before.
+* We are fetching the `country_id` by calling the model's method `getCountryId()` what we defined before.
 
 Let's continue with some more code:
 
@@ -85,7 +85,8 @@ Let's continue with a new example:
 ```php
 $sql = "
 SELECT
-	CONCAT(`username`, ' (', `email`, ')') AS `display_name`
+	`id`,
+	CONCAT(`firstname`, ' ', 'lastname`) AS `fullname`
 FROM `users`
 LIMIT 1
 ";
@@ -95,23 +96,143 @@ $user = new User(
 	$db->query($sql)->fetch()
 );
 
-print $user->display_name;
-print $user->customer_id;
+print $user->fullname;
+print $user->country_id;
 
 $user->display_name = "Things!";
 $user->email = "another@example.com";
 $user->save();
 ```
 
-In this example we are only fetching a concatenated value, and we are printing that concatenated value (`display_name`).
+In this example we are only fetching a concatenated value, and we are printing that concatenated value (`fullname`).
 
-We are also printing the `customer_id` parameter. But that parameter is `NULL` since we have not fetched that column in the `SELECT` query.
+We are also printing the `country_id` parameter. But that parameter is `NULL` since we have not fetched that column in the `SELECT` query.
 
-After that we are changing the `display_name` property. But that will not be saved to the database since that is an undefined field in the model.
+After that we are changing the `fullname` property. But that will not be saved to the database since that is an undefined field in the model.
 
 We are also changing the `email`, and that will get changed in the database.
 
-We are not fetching the `customer_id` in the `SELECT` query - so it's `NULL` in the model. But the `customer_id` will _not_ be updated to `NULL` on `save()` since we did not change the parameter in the model. The same goes for the `email`. The property was changed, and therefor it will be included in the `UPDATE`.
+We are not fetching the `country_id` in the `SELECT` query - so it's `NULL` in the model. But the `country_id` will _not_ be updated to `NULL` on `save()` since we did not change the parameter in the model. The same goes for the `email`. The property was changed, and therefor it will be included in the `UPDATE`.
+
+## Inserting
+
+```php
+$user = new User($db);
+$user->email = "test@example.com";
+
+var_dump($user->id);
+
+$user->save();
+
+print $user->id;
+```
+
+A new object is created, and the `email` parameter is set.
+
+When we print `$user->id` before the row is inserted, the value is `NULL`, but it contains row's auto incremented value after save.
+
+An alternative way is to do like this:
+
+```php
+$user = new User($db);
+$user->setValues(array(
+	"email" => "test@example.com",
+	"country_id" => 1,
+));
+$user->save();
+```
+
+You can also pass an array of expected values:
+
+```php
+$values = array(
+	"email" => "test@example.com",
+	"country_id" => 1,
+	"foo" => "bar",
+);
+
+$user = new User($db);
+$user->setValues(
+	$values,
+	array(
+		"email",
+		"country_id",
+	)
+);
+$user->save();
+```
+
+In this example only `email` and `country_id` will be set on the object, but `foo` will be ignored.
+
+Let's try to set a value that is not defined in the model (`$_fields`):
+
+```php
+$user = new User($db);
+$user->email = "test@example.com";
+$user->firstname = "Hello";
+$user->age = 1024;
+$user->save();
+```
+
+Only `email` is going to be saved to the database. `firstname` is not defined in the model, and `age` does not even exist in the table.
+
+## Updating
+
+```php
+$user = new User(
+	$db,
+	$db->query("SELECT * FROM `users` LIMIT 1")->fetch()
+);
+
+$user->email = "new@example.com";
+$user->save();
+```
+
+This creates a new object. We pass the database connection and the row data to the constructor.
+
+Then we change the email and saves it. `setValues()` works exactly the same here as for inserts.
+
+Note that `save()` is used for both inserts and updates. It figures out whether it is a "loaded" object by checking if the primary key exists.
+
+Here's another example:
+
+```php
+$user = new User(
+	$db,
+	$db->query("SELECT `id`, `email` FROM `users` LIMIT 1")->fetch()
+);
+
+$user->email = "hello@example.com";
+$user->save();
+```
+
+Here we are only fetching the `id` and `email` columns. We are changing the `email` and saves it. All other fields are going to be untouched by the `UPDATE` query. But it we take this example:
+
+```php
+$user = new User(
+	$db,
+	$db->query("SELECT `id`, `email` FROM `users` LIMIT 1")->fetch()
+);
+
+$user->country_id = 2;
+$user->save();
+```
+
+We are still only fetching `id` and `email`, but we are changing the `country_id`. On save `email` is going to be untouched by the `UPDATE` query, but `country_id` will be set to `2`.
+
+Both these fields can be used by the model when it is doing queries simply because we have defined them in the `$_fields` array. But what happens when we try to use a field that is not defined?
+
+```php
+$user = new User(
+	$db,
+	$db->query("SELECT `id`, `firstname` FROM `users` LIMIT 1")->fetch()
+);
+
+$user->firstname = "Newname";
+$user->save();
+```
+
+`firstname` will not be updated in the database. In fact, no query at all will be sent in this example, since there are no changes.
 
 ## Iterating
 
@@ -122,9 +243,6 @@ Examples:
 
 ## To write
 
-* Insert
-  * New primary key
-* Update
 * Filter
 * Validation
 * Delete
