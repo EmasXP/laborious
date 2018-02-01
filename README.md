@@ -6,7 +6,7 @@ Laborious is a micro PHP database model layer. It has two main goals:
 * Be extremely flexible
 
 
-It's build built for applications with a high load, and we want to spend as little resources as possible for creating abstractions during run time. We want to have the abstractions when we need it. 
+It's built for applications with a high load, and we want to spend as little resources as possible for creating abstractions during run time. We want to have the abstractions when we need it. 
 
 You can see the model layer as a complement to your database result, for example when you need more logic (DRY) or want to automate filters and validation. The models does not care about how or when it gets its data. You can create objects from the PDO result when you find that you need it.
 
@@ -49,7 +49,7 @@ class User extends \Laborious\Model {
 }
 ```
 
-We specify that the table name is `users` and we specify which fields should be in the model. And no we'll create a model object from the database result:
+We specify that the table name is `users` and we specify which fields should be in the model. And now we'll create an object from the database result:
 
 ```php
 $user = new User(
