@@ -14,7 +14,7 @@ class Model {
 
 
 
-	public static function build_select_columns($column_prefix = null, $as_prefix = null)
+	public static function buildSelectColumns($column_prefix = null, $as_prefix = null)
 	{
 		// TODO
 	}
@@ -113,7 +113,7 @@ class Model {
 	}
 
 
-	public function set_values($values, $fields = null)
+	public function setValues($values, $fields = null)
 	{
 		foreach ($values as $key => $val)
 		{
@@ -131,25 +131,25 @@ class Model {
 	}
 
 
-	public function validate_changed()
+	public function validateChanged()
 	{
-		return $this->validate_these($this->get_changed());
+		return $this->validateThese($this->getChanged());
 	}
 
 
-	public function validate_existing()
+	public function validateExisting()
 	{
-		return $this->validate_these($this->get_existing());
+		return $this->validateThese($this->getExisting());
 	}
 
 
-	public function validate_all()
+	public function validateAll()
 	{
-		return $this->validate_these(static::$_fields);
+		return $this->validateThese(static::$_fields);
 	}
 
 
-	public function validate_these($fields)
+	public function validateThese($fields)
 	{
 		$out = array();
 
@@ -172,25 +172,25 @@ class Model {
 	}
 
 
-	public function filter_changed()
+	public function filterChanged()
 	{
-		$this->filter_these($this->get_changed());
+		$this->filterThese($this->getChanged());
 	}
 
 
-	public function filter_existing()
+	public function filterExisting()
 	{
-		$this->filter_these($this->get_existing());
+		$this->filterThese($this->getExisting());
 	}
 
 
-	public function filter_all()
+	public function filterAll()
 	{
-		$this->filter_these(static::$_fields);
+		$this->filterThese(static::$_fields);
 	}
 
 
-	public function filter_these($fields)
+	public function filterThese($fields)
 	{
 		foreach ($fields as $field)
 		{
@@ -202,13 +202,13 @@ class Model {
 	}
 
 
-	public function get_changed()
+	public function getChanged()
 	{
 		return array_keys($this->_original_values);
 	}
 
 
-	public function get_existing()
+	public function getExisting()
 	{
 		$existing = array();
 
@@ -224,7 +224,7 @@ class Model {
 	}
 
 
-	public function clear_changed()
+	public function clearChanged()
 	{
 		$this->_original_values = array();
 	}
@@ -242,7 +242,7 @@ class Model {
 	}
 
 
-	public function get_keys()
+	public function getKeys()
 	{
 		return array_keys($this->_values);
 	}
@@ -257,11 +257,11 @@ class Model {
 
 		if ($has_primary)
 		{
-			$this->filter_existing();
+			$this->filterExisting();
 		}
 		else
 		{
-			$this->filter_all();
+			$this->filterAll();
 		}
 
 		// *****************************************************************************************
@@ -273,16 +273,16 @@ class Model {
 		{
 			if ($has_primary)
 			{
-				$errors = $this->validate_existing();
+				$errors = $this->validateExisting();
 			}
 			else
 			{
-				$errors = $this->validate_all();
+				$errors = $this->validateAll();
 			}
 		}
 		else
 		{
-			$errors = $this->validate_these($validate_these);
+			$errors = $this->validateThese($validate_these);
 		}
 
 		if (count($errors) > 0)
@@ -311,7 +311,7 @@ class Model {
 		}
 		else
 		{
-			$changed = $this->get_changed();
+			$changed = $this->getChanged();
 			if (count($changed) > 0)
 			{
 				foreach ($changed as $field)
@@ -337,7 +337,7 @@ class Model {
 
 		if ($has_primary)
 		{
-			$this->_db->execute_update(
+			$this->_db->executeUpdate(
 				static::$_table,
 				$data,
 				array(
@@ -347,7 +347,7 @@ class Model {
 		}
 		else
 		{
-			$insert_id = $this->_db->execute_insert(
+			$insert_id = $this->_db->executeInsert(
 				self::$_table,
 				$data
 			);
@@ -358,7 +358,7 @@ class Model {
 		// *****************************************************************************************
 
 
-		$this->clear_changed();
+		$this->clearChanged();
 	}
 
 
@@ -371,7 +371,7 @@ class Model {
 			return false;
 		}
 
-		$resp = $this->_db->execute_delete(
+		$resp = $this->_db->executeDelete(
 			self::$_table,
 			array(
 				self::$_primary => $primary_id,
@@ -389,7 +389,7 @@ class Model {
 		$class = get_class($this);
 		return new $class(
 			$this->_db,
-			$this->_db->execute_select(
+			$this->_db->executeSelect(
 				static::$_table,
 				array(
 					static::$_primary => $primary_id,

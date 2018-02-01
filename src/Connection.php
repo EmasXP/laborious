@@ -5,7 +5,7 @@ namespace Laborious;
 
 class Connection extends \PDO {
 
-	public function _build_where($where)
+	protected function buildWhere($where)
 	{
 		if (count($where) == 0)
 		{
@@ -23,7 +23,7 @@ class Connection extends \PDO {
 	}
 
 
-	public function execute_update($table, $data, $where)
+	public function executeUpdate($table, $data, $where)
 	{
 		if (count($data) == 0)
 		{
@@ -39,13 +39,13 @@ class Connection extends \PDO {
 		}
 		$sql .= implode(", ", $updates);
 
-		$sql .= $this->_build_where($where);
+		$sql .= $this->buildWhere($where);
 
 		return $this->exec($sql);
 	}
 
 
-	public function execute_insert($table, $data)
+	public function executeInsert($table, $data)
 	{
 		if (count($data) == 0)
 		{
@@ -78,21 +78,21 @@ class Connection extends \PDO {
 	}
 
 
-	public function execute_delete($table, $where)
+	public function executeDelete($table, $where)
 	{
 		$sql = "DELETE FROM `".$table."` ";
 
-		$sql .= $this->_build_where($where);
+		$sql .= $this->buildWhere($where);
 
 		return $this->exec($sql);
 	}
 
 
-	public function execute_select($table, $where, $fetch_one = false)
+	public function executeSelect($table, $where, $fetch_one = false)
 	{
 		$sql = "SELECT * FROM `".$table."` ";
 
-		$sql .= $this->_build_where($where);
+		$sql .= $this->buildWhere($where);
 
 		if ($fetch_one)
 		{
