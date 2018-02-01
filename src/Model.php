@@ -33,17 +33,17 @@ class Model {
 	{
 		if (in_array($name, static::$_fields))
 		{
-			if (isset($this->_original_values[$name]))
+			if (array_key_exists($name, $this->_original_values))
 			{
 				if (
-					isset($this->_values[$name]) // If a field that does not exist in _values is changed, we cannot know if it's changed back.
+					array_key_exists($name, $this->_values) // If a field that does not exist in _values is changed, we cannot know if it's changed back.
 					&& $this->_original_values[$name] === $value
 				)
 				{
 					unset($this->_original_values[$name]);
 				}
 			}
-			elseif ( ! isset($this->_values[$name]))
+			elseif ( ! array_key_exists($name, $this->_values))
 			{
 				$this->_original_values[$name] = null;
 			}
@@ -59,7 +59,7 @@ class Model {
 
 	public function get($name, $fallback = null)
 	{
-		if (isset($this->_values[$name]))
+		if (array_key_exists($name, $this->_values))
 		{
 			return $this->_values[$name];
 		}
@@ -214,7 +214,7 @@ class Model {
 
 		foreach (static::$_fields as $field)
 		{
-			if (isset($this->_values[$field]))
+			if (array_key_exists($field, $this->_values))
 			{
 				$existing[] = $field;
 			}
