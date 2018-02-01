@@ -1,0 +1,14 @@
+- Model::buildSelectColumns()
+- Model::__construct() $from_prefix
+- Iterator::asArray()
+- ForwardIterator::asArray()
+- Connection:
+	- Support for NULL
+	- Quote table and column names
+
+TO CHECK:
+- Can the model receive PDO objects (not assoc arrays)
+
+TO CONSIDER:
+- Model::getFields() - or maybe it should be called getColumns()
+- Model::getKeysAndFields() - bad name though. Should return the keys of $_values and the ones that are missing from $_fields.
