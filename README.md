@@ -122,4 +122,21 @@ Examples:
 
 ## To write
 
-* How it got it's name.
+* Insert
+  * New primary key
+* Update
+* Filter
+* Validation
+* Delete
+* Select
+  * fetch
+  * Iterator
+  * ForwardIterator
+* Relationships
+* Tips and tricks
+* isset and unset
+* setValues
+* getChanged
+* getExisting (Defined fields that exists in the model)
+* clearChanged
+* getKeys (The keys of the array, even if defined or not)
