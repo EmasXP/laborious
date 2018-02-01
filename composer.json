@@ -1,0 +1,8 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Laborious\\": "src",
+            "Laborious\\Tests\\": "tests"
+        }
+    }
+}
