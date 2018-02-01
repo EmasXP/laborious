@@ -66,7 +66,7 @@ class Connection extends \PDO {
 		$values = array();
 		foreach (array_values($data) as $val)
 		{
-			$values[] = $this->quote($value);
+			$values[] = $this->quote($val);
 		}
 		$sql .= implode(", ", $values);
 
