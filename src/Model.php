@@ -81,11 +81,6 @@ class Model {
 			return $this->_values[$name];
 		}
 
-		if (in_array($name, static::$_fields))
-		{
-			return null;
-		}
-
 		trigger_error(
 			"Undefined property: "
 				.get_class($trace[0]["object"])
@@ -100,8 +95,6 @@ class Model {
 
 	public function __isset($name)
 	{
-		// This should only check _values, since a _field that does not have a row in _values
-		// is NULL, and NULL values in isset() is FALSE.
 		return isset($this->_values[$name]);
 	}
 
@@ -348,7 +341,7 @@ class Model {
 		else
 		{
 			$insert_id = $this->_db->executeInsert(
-				self::$_table,
+				static::$_table,
 				$data
 			);
 
