@@ -3,6 +3,7 @@
 namespace Laborious;
 
 
+
 class Model {
 
 	protected static $_fields = array();
@@ -11,7 +12,6 @@ class Model {
 	public $_db;
 	protected $_values;
 	protected $_original_values = array();
-
 
 
 	public static function buildSelectColumns($column_prefix = null, $as_prefix = null)
@@ -35,18 +35,30 @@ class Model {
 		{
 			if (array_key_exists($name, $this->_original_values))
 			{
+				/*
+				 * Checks to see if the value is the same as the original value.
+				 * We cannot tell if the value has changed back to it's orignal
+				 * value if the original value is NonExisting.
+				 */
 				if (
-					array_key_exists($name, $this->_values) // If a field that does not exist in _values is changed, we cannot know if it's changed back.
+					! $this->_original_values[$name] instanceof Internal\NonExisting
 					&& $this->_original_values[$name] === $value
 				)
 				{
 					unset($this->_original_values[$name]);
 				}
 			}
+
+			/*
+			 * We do not know about the this parameter and the previous value of
+			 * it.
+			 */
 			elseif ( ! array_key_exists($name, $this->_values))
 			{
-				$this->_original_values[$name] = null;
+				$this->_original_values[$name] = new Internal\NonExisting;
 			}
+
+			// The value has changed
 			elseif ($this->_values[$name] !== $value)
 			{
 				$this->_original_values[$name] = $this->_values[$name];
@@ -54,6 +66,7 @@ class Model {
 		}
 
 		$this->_values[$name] = $value;
+		return $this;
 	}
 
 
