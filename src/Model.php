@@ -140,6 +140,8 @@ class Model {
 				$this->set($key, $val);
 			}
 		}
+
+		return $this;
 	}
 
 
@@ -245,6 +247,7 @@ class Model {
 	public function clearChanged()
 	{
 		$this->_original_values = array();
+		return $this;
 	}
 
 
@@ -357,7 +360,7 @@ class Model {
 
 		if ($has_primary && count($data) == 0)
 		{
-			return;
+			return $this;
 		}
 
 
@@ -387,6 +390,7 @@ class Model {
 
 
 		$this->clearChanged();
+		return $this;
 	}
 
 
@@ -396,7 +400,8 @@ class Model {
 
 		if ($primary_id === null)
 		{
-			return false;
+			// TODO: Throw exception
+			return $this;
 		}
 
 		$resp = $this->_db->executeDelete(
@@ -408,6 +413,7 @@ class Model {
 
 		$this->set(self::$_primary, null);
 
+		// TODO: Return $self
 		return $resp;
 	}
 
