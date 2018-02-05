@@ -23,8 +23,8 @@ This example is going to show some of the features of Laborious. We are going to
 First we need to create the connection:
 
 ```php
-$db = new Laborious\Connection("mysql:host=localhost;dbname=database;charset=utf8", "user", "pass");
-$db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+$db = new \Laborious\Connection("mysql:host=localhost;dbname=database;charset=utf8", "user", "pass");
+$db->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 ```
 
 `Laborious\Connection` extends `PDO`, and adds a some methods to make it easier for the model layer to execute queries.
@@ -99,7 +99,7 @@ $user = new User(
 print $user->fullname;
 print $user->country_id;
 
-$user->display_name = "Things!";
+$user->fullname = "Things!";
 $user->email = "another@example.com";
 $user->save();
 ```
@@ -243,6 +243,8 @@ Examples:
 
 ## To write
 
+* Insert
+  * Fetching non-set defined values (returns `NULL`)
 * Filter
 * Validation
 * Delete
@@ -258,3 +260,4 @@ Examples:
 * getExisting (Defined fields that exists in the model)
 * clearChanged
 * getKeys (The keys of the array, even if defined or not)
+  * Before and after INSERT.
