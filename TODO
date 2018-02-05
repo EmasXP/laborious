@@ -5,6 +5,8 @@
 - Connection:
 	- Support for NULL
 	- Quote table and column names
+- Model::reload()
+- Model::loaded()
 
 TO CHECK:
 - Can the model receive PDO objects (not assoc arrays)
@@ -12,3 +14,13 @@ TO CHECK:
 TO CONSIDER:
 - Model::getFields() - or maybe it should be called getColumns()
 - Model::getKeysAndFields() - bad name though. Should return the keys of $_values and the ones that are missing from $_fields.
+
+TO THINK ABOUT:
+This scenraio:
+
+$user = new User;
+$user->email = "test@example.com";
+$user->save();
+print $user->username;
+
+This will be NULL because of filters. Does this mean that __get() should return NULL on them after all?
