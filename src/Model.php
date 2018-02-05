@@ -81,7 +81,10 @@ class Model {
 			return $this->_values[$name];
 		}
 
-		if (in_array($name, static::$_fields))
+		if (
+			$this->get(static::$_primary) === null
+			&& in_array($name, static::$_fields)
+		)
 		{
 			return null;
 		}
@@ -97,6 +100,8 @@ class Model {
 				." on line ".$trace[0]["line"],
 			E_USER_NOTICE
 		);
+
+		return null;
 	}
 
 
@@ -244,7 +249,17 @@ class Model {
 
 	public function getKeys()
 	{
-		return array_keys($this->_values);
+		if ($this->get(static::$_primary) !== null)
+		{
+			return array_keys($this->_values);
+		}
+
+		return array_unique(
+			array_merge(
+				static::$_fields,
+				array_keys($this->_values)
+			)
+		);
 	}
 
 
