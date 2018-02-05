@@ -81,6 +81,13 @@ class Model {
 			return $this->_values[$name];
 		}
 
+		if (in_array($name, static::$_fields))
+		{
+			return null;
+		}
+
+		$trace = debug_backtrace();
+
 		trigger_error(
 			"Undefined property: "
 				.get_class($trace[0]["object"])
