@@ -1,9 +1,9 @@
 <?php
 
-namespace Laborious/Exception;
+namespace Laborious\Exception;
 
 
-class ValidationException extends Exception {
+class ValidationException extends \Exception {
 
 	protected $_errors;
 
