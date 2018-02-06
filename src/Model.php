@@ -404,7 +404,7 @@ class Model {
 			return $this;
 		}
 
-		$resp = $this->_db->executeDelete(
+		$this->_db->executeDelete(
 			self::$_table,
 			array(
 				self::$_primary => $primary_id,
@@ -413,8 +413,7 @@ class Model {
 
 		$this->set(self::$_primary, null);
 
-		// TODO: Return $self
-		return $resp;
+		return $this;
 	}
 
 

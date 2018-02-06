@@ -1,12 +1,13 @@
+- Throw exception in delete() on non-loaded objects.
+- Model::reload()
+- Model::loaded()
 - Model::buildSelectColumns()
 - Model::__construct() $from_prefix
 - Iterator::asArray()
 - ForwardIterator::asArray()
 - Connection:
-	- Support for NULL
+	- Support for NULL in SET, WHERE and so on.
 	- Quote table and column names
-- Model::reload()
-- Model::loaded()
 
 TO CHECK:
 - Can the model receive PDO objects (not assoc arrays)

@@ -23,6 +23,9 @@ class Connection extends \PDO {
 	}
 
 
+	/**
+	 * @return int Number of affected rows.
+	 */
 	public function executeUpdate($table, $data, $where)
 	{
 		if (count($data) == 0)
@@ -41,10 +44,25 @@ class Connection extends \PDO {
 
 		$sql .= $this->buildWhere($where);
 
-		return $this->exec($sql);
+		$result = $this->exec($sql);
+
+		if ($result === false)
+		{
+			$error = $this->errorInfo();
+			throw new Exception\DatabaseException(
+				$error[2],
+				$error[1],
+				$error[0]
+			);
+		}
+
+		return $result;
 	}
 
 
+	/**
+	 * @return string The ID of the inserted row or sequence value.
+	 */
 	public function executeInsert($table, $data)
 	{
 		if (count($data) == 0)
@@ -72,22 +90,49 @@ class Connection extends \PDO {
 
 		$sql .= ")";
 
-		$this->query($sql);
+		$result = $this->query($sql);
+
+		if ($result === false)
+		{
+			$error = $this->errorInfo();
+			throw new Exception\DatabaseException(
+				$error[2],
+				$error[1],
+				$error[0]
+			);
+		}
 
 		return $this->lastInsertId();
 	}
 
-
+	/**
+	 * @return int Number of affected rows.
+	 */
 	public function executeDelete($table, $where)
 	{
 		$sql = "DELETE FROM `".$table."` ";
 
 		$sql .= $this->buildWhere($where);
 
-		return $this->exec($sql);
+		$result = $this->exec($sql);
+
+		if ($result === false)
+		{
+			$error = $this->errorInfo();
+			throw new Exception\DatabaseException(
+				$error[2],
+				$error[1],
+				$error[0]
+			);
+		}
+
+		return $result;
 	}
 
 
+	/**
+	 * @return PDOStatement|mixed Depending on if $fetch_one is true or false.
+	 */
 	public function executeSelect($table, $where, $fetch_one = false)
 	{
 		$sql = "SELECT * FROM `".$table."` ";
@@ -100,6 +145,16 @@ class Connection extends \PDO {
 		}
 
 		$data = $this->query($sql);
+
+		if ($data === false)
+		{
+			$error = $this->errorInfo();
+			throw new Exception\DatabaseException(
+				$error[2],
+				$error[1],
+				$error[0]
+			);
+		}
 
 		if ( ! $fetch_one)
 		{
