@@ -3,7 +3,7 @@
 Laborious is a micro PHP database model layer. It has two main goals:
 
 * Do as little around-stuff as possible
-* Be extremely flexible
+* Be extremely flexible and extensible
 
 
 It's built for applications with a high load, and we want to spend as little resources as possible for creating abstractions during run time. We want to have the abstractions when we need it. 
@@ -86,7 +86,7 @@ Let's continue with a new example:
 $sql = "
 SELECT
 	`id`,
-	CONCAT(`firstname`, ' ', 'lastname`) AS `fullname`
+	CONCAT(`firstname`, ' ', `lastname`) AS `fullname`
 FROM `users`
 LIMIT 1
 ";
@@ -252,6 +252,7 @@ Examples:
   * fetch
   * Iterator
   * ForwardIterator
+* Exceptions
 * Relationships
 * Tips and tricks
 * isset and unset
