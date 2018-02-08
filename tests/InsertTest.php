@@ -6,22 +6,6 @@ namespace Laborious\Tests;
 use PHPUnit\Framework\TestCase;
 
 
-class User extends \Laborious\Model {
-
-	protected static $_table = "users";
-
-	protected static $_fields = array(
-		"id",
-		"email",
-		"country_id",
-	);
-
-	public function getCountryId()
-	{
-		return $this->country_id;
-	}
-}
-
 
 final class InsertTest extends TestCase {
 
@@ -42,7 +26,7 @@ final class InsertTest extends TestCase {
 
 	public function testHavePrimaryIdAfterSave()
 	{
-		$user = new User($this->db);
+		$user = new DummyUser($this->db);
 		$user->email = "test@example.com";
 		$user->save();
 
@@ -52,7 +36,7 @@ final class InsertTest extends TestCase {
 
 	public function testHavePrimaryIdAfterSavedEmptyModel()
 	{
-		$user = new User($this->db);
+		$user = new DummyUser($this->db);
 		$user->save();
 
 		$this->assertTrue(isset($user->id));
@@ -61,14 +45,14 @@ final class InsertTest extends TestCase {
 
 	public function testHaveNotPrimaryIdBeforeSave()
 	{
-		$user = new User($this->db);
+		$user = new DummyUser($this->db);
 		$this->assertFalse(isset($user->id));
 		$this->assertNull($user->id);
 	}
 
 	public function testNotNonSetParamsIsNullAfterSave()
 	{
-		$user = new User($this->db);
+		$user = new DummyUser($this->db);
 		$user->email = "test@example.com";
 		$user->save();
 		$this->assertNull($user->country_id);
@@ -76,7 +60,7 @@ final class InsertTest extends TestCase {
 
 	public function testSameValueAfterSave()
 	{
-		$user = new User($this->db);
+		$user = new DummyUser($this->db);
 		$user->email = "foobar@example.com";
 		$user->save();
 
@@ -85,7 +69,7 @@ final class InsertTest extends TestCase {
 
 	public function testHaveSetParamsAfterSave()
 	{
-		$user = new User($this->db);
+		$user = new DummyUser($this->db);
 		$user->email = "test@example.com";
 		$user->save();
 		$this->assertTrue(isset($user->email));
@@ -94,20 +78,20 @@ final class InsertTest extends TestCase {
 
 	public function testDoesNotHaveUndefinedFieldBeforeSave()
 	{
-		$user = new User($this->db);
+		$user = new DummyUser($this->db);
 		$this->assertFalse(isset($user->undefined_field));
 	}
 
 	public function testDoesNotHaveUndefinedFieldAfterSave()
 	{
-		$user = new User($this->db);
+		$user = new DummyUser($this->db);
 		$user->save();
 		$this->assertFalse(isset($user->undefined_field));
 	}
 
 	public function testSetValues()
 	{
-		$user = new User($this->db);
+		$user = new DummyUser($this->db);
 		$user->setValues(array(
 			"email" => "1234@example.com",
 			"country_id" => 12,
@@ -124,7 +108,7 @@ final class InsertTest extends TestCase {
 
 	public function testSetValuesWithExpectedValues()
 	{
-		$user = new User($this->db);
+		$user = new DummyUser($this->db);
 		$user->setValues(
 			array(
 				"email" => "98765@example.com",
