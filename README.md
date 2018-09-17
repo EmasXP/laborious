@@ -241,6 +241,74 @@ Examples:
 * Query result and create model inside the iteration.
 * Query result and create an iterator.
 
+## Relations
+
+Laborious does not have model relations per se, but have the ability to load related models by prefix.
+
+Let's say we have three models:
+
+* **Country**
+* **User** - A User belongs to a country (`users.county_id = countries.id`)
+* **Post** - A Post belongs to a user (`posts.user_id = users.id`)
+
+If we wan't to eagerly load `User` while we are fetching `Post` object, we need to specify this:
+
+```php
+$sql = "
+	SELECT
+		`posts`.*,
+		".(new User($db))->getSelectString("users")."
+	FROM `posts`
+	LEFT JOIN `users` ON `users`.`id` = `posts`.`user_id`
+"
+```
+
+We are here using the `getSelectString()` helper method to build parts of the `SELECT` statement.
+
+We are calling that method on the `User` object. We are passing `"users"` to tell the method what the table is joined as. This parameter is also used as a "prefix". If we take a look on the string that the `getSelectString()` produces, it would look something like this:
+
+```sql
+`users`.`id` AS `users:id`, `users`.`country_id` AS `users:country_id`
+```
+
+As you see the `AS` is `<tablename>:<columnname>`, but we can change that by using the second (`$as_prefix`) parameter:
+
+```php
+print (new User($db))->getSelectString("users", "hello");
+```
+
+Would produce:
+
+```sql
+`users`.`id` AS `hello:id`, `users`.`country_id` AS `hello:country_id`
+```
+
+And you can set the first (`$table`) parameter to `null`:
+
+```php
+print (new User($db))->getSelectString(null);
+```
+
+Would produce:
+
+```sql
+`id`, `country_id`
+```
+
+Or set `$table` to `null` _and_ specify a `$as_prefix`:
+
+```php
+print (new User($db))->getSelectString(null, "hello");
+```
+
+Would produce:
+
+```sql
+`id` AS `hello:id`, `country_id` AS `hello:country_id`
+```
+
+These two examples might be a bit dangerous if you are not careful, and in most (if not all) scenarios, they will not be used.
+
 ## Contribute
 
 There are two main areas where help is needed:

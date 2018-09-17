@@ -14,16 +14,39 @@ class Model {
 	protected $_original_values = array();
 
 
-	public static function buildSelectColumns($column_prefix = null, $as_prefix = null)
+	public function getSelectString($table, $as_prefix = null)
 	{
-		// TODO
+		$columns = array();
+
+		foreach (static::$_fields as $field)
+		{
+			$select = "";
+
+			if ($table !== null)
+			{
+				$select .= "`$table`.";
+			}
+
+			$select .= "`$field`";
+
+			if ($as_prefix !== null)
+			{
+				$select .= " AS `$as_prefix:$field`";
+			}
+			elseif ($table !== null)
+			{
+				$select .= " AS `$table:$field`";
+			}
+
+			$columns[] = $select;
+		}
+
+		return implode(", ", $columns);
 	}
 
 
-	public function __construct($db, $values = array(), $from_prefix = null)
+	public function __construct($db, $values = array())
 	{
-		// TODO: $from_prefix
-
 		$this->_db = $db;
 		$this->_values = $values;
 	}
