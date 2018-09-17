@@ -241,6 +241,13 @@ Examples:
 * Query result and create model inside the iteration.
 * Query result and create an iterator.
 
+## Contribute
+
+There are two main areas where help is needed:
+
+* **Writing tests** - Not everything is covered by tests yet.
+* **Writing documentation** - This `README.md` needs a lot more love.
+
 ## To write
 
 * Insert
