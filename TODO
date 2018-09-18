@@ -7,7 +7,6 @@
 - Connection:
 	- Support for NULL in SET, WHERE and so on.
 	- Quote table and column names (PDO does not support this)
-	- Seteting for throwing exceptions on bad queries.
 - Possibility to pass objects instead of dictionaries to _construct().
 - loadModelFromObject() should check if loaded(), populating a loaded object is dangerous and should not be allowed.
 
@@ -15,6 +14,9 @@ TESTS TO WRITE:
 - loadModel(): Fetching the correct rows.
 - loadModel(): Fetching sub-sub model.
 - loadModel(): Fetching sub of sub model.
+- Connection::buildWhere() with NULL.
+- Connection::executeUpdate() with NULL.
+- Connection::executeInsert() with NULL.
 
 TO CHECK:
 - Can the model receive PDO objects (not assoc arrays)
