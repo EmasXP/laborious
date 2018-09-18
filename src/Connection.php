@@ -16,7 +16,14 @@ class Connection extends \PDO {
 
 		foreach ($where as $key => $val)
 		{
-			$wheres[] = "`".$key."` = ".$this->quote($val);
+			if ($val === null)
+			{
+				$wheres[] = "`".$key."` IS NULL";
+			}
+			else
+			{
+				$wheres[] = "`".$key."` = ".$this->quote($val);
+			}
 		}
 
 		return " WHERE ".implode(" AND ", $wheres);
@@ -38,7 +45,14 @@ class Connection extends \PDO {
 		$updates = array();
 		foreach ($data as $key => $val)
 		{
-			$updates[] = "`".$key."` = ".$this->quote($val);
+			if ($val === null)
+			{
+				$updates[] = "`".$key."` = NULL";
+			}
+			else
+			{
+				$updates[] = "`".$key."` = ".$this->quote($val);
+			}
 		}
 		$sql .= implode(", ", $updates);
 
@@ -84,7 +98,14 @@ class Connection extends \PDO {
 		$values = array();
 		foreach (array_values($data) as $val)
 		{
-			$values[] = $this->quote($val);
+			if ($val === null)
+			{
+				$values[] = "NULL";
+			}
+			else
+			{
+				$values[] = $this->quote($val);
+			}
 		}
 		$sql .= implode(", ", $values);
 
