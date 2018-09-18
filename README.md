@@ -42,7 +42,7 @@ class User extends \Laborious\Model {
 		"country_id",
 	);
 
-  	public function getCountryId()
+	public function getCountryId()
 	{
 		return $this->country_id;
 	}
@@ -327,21 +327,21 @@ $sql = "
 
 $post = new Post(
 	$db,
-    $db->query($sql)->fetch()
+	$db->query($sql)->fetch()
 );
 
 print $post->title;
 
 $user = $post->loadModel(
 	\User::class,
-    "users"
+	"users"
 );
 
 print $user->email;
 
 $country = $country->loadModel(
 	\Country::class,
-    "countries"
+	"countries"
 );
 
 print $country->name;
@@ -364,14 +364,14 @@ This means that we can load the `Country` object directly from the `Post` object
 ```php
 $post = new Post(
 	$db,
-    $db->query($sql)->fetch()
+	$db->query($sql)->fetch()
 );
 
 print $post->title;
 
 $country = $post->loadModel(
 	\Country::class,
-    "users:countries"
+	"users:countries"
 );
 
 print $country->name;
@@ -387,13 +387,13 @@ You can also pass an object to `loadModel()` if you want to. This is a tiny bit 
 // By string
 $user = $post->loadModel(
 	\User::class,
-    "users"
+	"users"
 );
 
 // By object
 $user = $post->loadModel(
 	new User($db),
-    "users"
+	"users"
 );
 ```
 
