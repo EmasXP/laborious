@@ -22,6 +22,22 @@ final class RelationsTest extends TestCase {
 			`lastname` TEXT,
 			`country_id` INTEGER
 		)");
+
+		$this->db->query("CREATE TABLE `countries` (
+			`id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+			`name` TEXT
+		)");
+
+		$this->db->query("INSERT INTO `countries` (`name`) VALUES ('Nowhere')");
+		$nowhere_id = $this->db->lastInsertId();
+
+		$this->db->query("INSERT INTO `countries` (`name`) VALUES ('Somewhere')");
+		$somewhere_id = $this->db->lastInsertId();
+
+		$this->db->query("INSERT INTO `users` (`username`, `country_id`) VALUES ('UserA', '$nowhere_id')");
+		$this->db->query("INSERT INTO `users` (`username`, `country_id`) VALUES ('UserB', '$nowhere_id')");
+		$this->db->query("INSERT INTO `users` (`username`, `country_id`) VALUES ('UserC', '$somewhere_id')");
+		$this->db->query("INSERT INTO `users` (`username`, `country_id`) VALUES ('UserD', '$somewhere_id')");
 	}
 
 
@@ -70,6 +86,98 @@ final class RelationsTest extends TestCase {
 			"`id` AS `hello:id`, `email` AS `hello:email`, `country_id` AS `hello:country_id`",
 			$string
 		);
+	}
+
+
+	public function testEagerLoadFromString()
+	{
+		$sql = "
+		SELECT
+			`users`.*,
+			".(new DummyCountry($this->db))->getSelectString("countries")."
+		FROM `users`
+		LEFT JOIN `countries` ON `countries`.`id` = `users`.`country_id`
+		LIMIT 1
+		";
+
+		$user = new DummyUser(
+			$this->db,
+			$this->db->query($sql)->fetch()
+		);
+
+		$this->assertTrue($user->id !== null);
+
+		$country = $user->loadModel(DummyCountry::class, "countries");
+
+		$this->assertTrue($country->id !== null);
+	}
+
+
+	public function testEagerLoadFromEmptyModel()
+	{
+		$sql = "
+		SELECT
+			`users`.*,
+			".(new DummyCountry($this->db))->getSelectString("countries")."
+		FROM `users`
+		LEFT JOIN `countries` ON `countries`.`id` = `users`.`country_id`
+		LIMIT 1
+		";
+
+		$user = new DummyUser(
+			$this->db,
+			$this->db->query($sql)->fetch()
+		);
+
+		$country = $user->loadModel(new DummyCountry($this->db), "countries");
+
+		$this->assertTrue($country->id !== null);
+	}
+
+
+	/**
+	 * @expectedException \Laborious\Exception\LaboriousException
+	 */
+	public function testEagerLoadFromEmptyStdClass()
+	{
+		$sql = "
+		SELECT
+			`users`.*,
+			".(new DummyCountry($this->db))->getSelectString("countries")."
+		FROM `users`
+		LEFT JOIN `countries` ON `countries`.`id` = `users`.`country_id`
+		LIMIT 1
+		";
+
+		$user = new DummyUser(
+			$this->db,
+			$this->db->query($sql)->fetch()
+		);
+
+		$user->loadModel(new \stdClass, "countries");
+	}
+
+
+	/**
+	 * @expectedException \Laborious\Exception\LaboriousException
+	 */
+	public function testEagerLoadFromInvalid()
+	{
+		$sql = "
+		SELECT
+			`users`.*,
+			".(new DummyCountry($this->db))->getSelectString("countries")."
+		FROM `users`
+		LEFT JOIN `countries` ON `countries`.`id` = `users`.`country_id`
+		LIMIT 1
+		";
+
+		$user = new DummyUser(
+			$this->db,
+			$this->db->query($sql)->fetch()
+		);
+
+		$user->loadModel(123, "countries");
 	}
 
 }

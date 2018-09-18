@@ -93,6 +93,13 @@ class Model {
 	}
 
 
+	public function setRaw($name, $value)
+	{
+		$this->_values[$name] = $value;
+		return $this;
+	}
+
+
 	public function get($name, $fallback = null)
 	{
 		if (array_key_exists($name, $this->_values))
@@ -161,6 +168,20 @@ class Model {
 			if ($fields === null || in_array($key, $fields))
 			{
 				$this->set($key, $val);
+			}
+		}
+
+		return $this;
+	}
+
+
+	public function setRawValues($values, $fields = null)
+	{
+		foreach ($values as $key => $val)
+		{
+			if ($fields === null || in_array($key, $fields))
+			{
+				$this->_values[$key] = $val;
 			}
 		}
 
@@ -452,6 +473,83 @@ class Model {
 				),
 				true
 			)
+		);
+	}
+
+
+	/**
+	 * This is the fastest implementation of loadModel() when the $model is a string.
+	 *
+	 * @param string $model
+	 * @param string $prefix
+	 * @return \Laborious\Model
+	 */
+	protected function loadModelFromString($model, $prefix)
+	{
+		$prefix .= ":";
+		$prefix_length = strlen($prefix);
+		$data = array();
+
+		foreach ($this->_values as $key => $val)
+		{
+			if (substr($key, 0, $prefix_length) === $prefix)
+			{
+				$data[substr($key, $prefix_length)] = $val;
+			}
+		}
+
+		return new $model($this->_db, $data);
+	}
+
+
+	/**
+	 * This is the fastest implementation of loadModel() when the $model is an instance of Model.
+	 *
+	 * @param \Laborious\Model $model
+	 * @param string $prefix
+	 * @return \Laborious\Model
+	 */
+	protected function loadModelFromObject($model, $prefix)
+	{
+		$prefix .= ":";
+		$prefix_length = strlen($prefix);
+
+		foreach ($this->_values as $key => $val)
+		{
+			if (substr($key, 0, $prefix_length) === $prefix)
+			{
+				$model->setRaw(
+					substr($key, $prefix_length),
+					$val
+				);
+			}
+		}
+
+		return $model;
+	}
+
+
+	/**
+	 * Load a related model by prefix.
+	 *
+	 * @param string|\Laborious\Model $model
+	 * @param string $prefix
+	 * @return \Laborious\Model
+	 */
+	public function loadModel($model, $prefix)
+	{
+		if (is_string($model))
+		{
+			return $this->loadModelFromString($model, $prefix);
+		}
+
+		elseif ($model instanceof \Laborious\Model)
+		{
+			return $this->loadModelFromObject($model, $prefix);
+		}
+
+		throw new \Laborious\Exception\LaboriousException(
+			"\$model must be a Model or a string."
 		);
 	}
 
