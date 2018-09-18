@@ -439,6 +439,80 @@ catch (\Laborious\Exception\LaboriousException $e)
 }
 ```
 
+#### reload()
+
+Reloads the data from the database. A `\Laborious\Exception\LaboriousException` exception is thrown if trying to reload a non-loaded model:
+
+```php
+try
+{
+    $user->reload();
+}
+catch (\Laborious\Exception\LaboriousException $e)
+{
+    print $e->getMessage();
+}
+```
+
+It's important to know that the all the values of the model is flushed and populated with data from the database:
+
+```php
+$sql = "
+	SELECT
+		*,
+		CONCAT(`first_name`, ' ', `last_name`) AS `full_name`
+	FROM `users`
+	LIMIT 1
+";
+
+$user = new User(
+    $this->db,
+	$this->db->query($sql)->fetch()
+);
+
+print $user->full_name; // Contains data
+
+$user->reload();
+
+print $user->full_name; // Throws an error
+```
+
+The same goes for the joined tables (and related tables that you have joined):
+
+```php
+$sql = "
+	SELECT
+		`users`.*,
+		".(new Country($db))->getSelectString("countries")."
+	FROM `users`
+	LEFT JOIN `countries` ON `countries`.`id` = `users`.`country_id`
+	LIMIT 1
+";
+
+$user = new User(
+    $this->db,
+	$this->db->query($sql)->fetch()
+);
+
+$country = $user->loadModel(
+	\Country::class,
+    "countries"
+);
+
+$country->isLoaded(); // true
+
+$user->reload();
+
+$country->isLoaded(); // Still true since it was created before reload()
+
+$new_country =  $user->loadModel(
+	\Country::class,
+    "countries"
+);
+
+$country->isLoaded(); // false, the "countries" prefix is gone.
+```
+
 ## Contribute
 
 There are two main areas where help is needed:

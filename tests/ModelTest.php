@@ -133,4 +133,105 @@ final class ModelTest extends TestCase {
 		$user->delete();
 	}
 
+
+	/**
+	 * @expectedException \Laborious\Exception\LaboriousException
+	 */
+	public function testExceptionReloadingNonLoaded()
+	{
+		$user = new DummyUser($this->db);
+		$user->reload();
+	}
+
+
+	public function testLoadedAfterReload()
+	{
+		$user = new DummyUser($this->db);
+		$user->email = "donald@duck.com";
+		$user->save();
+
+		$user->reload();
+
+		$this->assertTrue($user->isLoaded());
+	}
+
+
+	public function testSameValueAfterReload()
+	{
+		$user = new DummyUser($this->db);
+		$user->email = "donald@duck.com";
+		$user->save();
+
+		$user->reload();
+
+		$this->assertEquals("donald@duck.com", $user->email);
+	}
+
+
+	public function testChangedValueBeforeReload()
+	{
+		$user = new DummyUser($this->db);
+		$user->email = "donald@duck.com";
+		$user->save();
+
+		$this->db->query(
+			"UPDATE `users` SET `email` = 'daisy@duck.com' WHERE `id` = "
+				.$this->db->quote($user->id)
+		);
+
+		$user->reload();
+
+		$this->assertEquals("daisy@duck.com", $user->email);
+	}
+
+
+	public function testSameIdAfterReload()
+	{
+		$user = new DummyUser($this->db);
+		$user->email = "donald@duck.com";
+		$user->save();
+
+		$id = $user->id;
+
+		$user->reload();
+
+		$this->assertEquals($id, $user->id);
+	}
+
+
+	public function testSameAfterReloadMultipleRows()
+	{
+		$this->db->query("INSERT INTO `users` (`email`) VALUES ('UserA@test.com')");
+
+		$user = new DummyUser($this->db);
+		$user->email = "donald@duck.com";
+		$user->save();
+
+		$id = $user->id;
+
+		$this->db->query("INSERT INTO `users` (`email`) VALUES ('UserB@test.com')");
+
+		$user->reload();
+
+		$this->assertEquals($id, $user->id);
+		$this->assertEquals("donald@duck.com", $user->email);
+	}
+
+
+	public function testChangedOtherValueBeforeReload()
+	{
+		$user = new DummyUser($this->db);
+		$user->email = "donald@duck.com";
+		$user->save();
+
+		$this->db->query(
+			"UPDATE `users` SET `username` = 'Donald' WHERE `id` = "
+				.$this->db->quote($user->id)
+		);
+
+		$user->reload();
+
+		$this->assertEquals("Donald", $user->username);
+	}
+
 }

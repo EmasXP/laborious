@@ -146,9 +146,24 @@ class Model {
 
 	public function setRawValues($values, $fields = null)
 	{
+		if (
+			$fields === null
+			&& (
+				$this->_values === null
+				|| count($this->_values) == 0
+			)
+		)
+		{
+			$this->_values = $values;
+			return $this;
+		}
+
 		foreach ($values as $key => $val)
 		{
-			if ($fields === null || in_array($key, $fields))
+			if (
+				$fields === null
+				|| in_array($key, $fields)
+			)
 			{
 				$this->_values[$key] = $val;
 			}
@@ -450,6 +465,33 @@ class Model {
 	public function isLoaded()
 	{
 		return ($this->get(static::$_primary) !== null);
+	}
+
+
+	public function reload()
+	{
+		$primary_id = $this->get(self::$_primary);
+
+		if ($primary_id === null)
+		{
+			throw new Exception\LaboriousException(
+				"The model is not loaded."
+			);
+		}
+
+		$data = $this->_db->executeSelect(
+			static::$_table,
+			array(
+				static::$_primary => $primary_id,
+			),
+			true
+		);
+
+		$this->_values = null;
+
+		$this->setRawValues($data);
+
+		return $this;
 	}
 
 
