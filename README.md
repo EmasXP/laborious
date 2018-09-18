@@ -397,6 +397,32 @@ $user = $post->loadModel(
 );
 ```
 
+## API
+
+### Model
+
+#### isLoaded()
+
+Checks whether a model is "loaded". A loaded model is a model who has the primary key populated.
+
+```php
+$user = new User($db);
+
+$user->isLoaded(): // false
+
+$user->email = "donald@duck.com";
+$user->save();
+$user->isLoaded(); // true
+
+$found_user = (new User($db))
+    ->fetch(1024);
+$found_user->isLoaded(); // true (if the row is found, false if not)
+
+$new_user = new User($db);
+$new_user->id = 12; // if "id" is the primary key
+$new_user->isLoaded(); // true
+```
+
 ## Contribute
 
 There are two main areas where help is needed:

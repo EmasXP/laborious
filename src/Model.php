@@ -477,6 +477,12 @@ class Model {
 	}
 
 
+	public function isLoaded()
+	{
+		return ($this->get(static::$_primary) !== null);
+	}
+
+
 	/**
 	 * This is the fastest implementation of loadModel() when the $model is a string.
 	 *
