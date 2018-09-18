@@ -362,7 +362,7 @@ class Model {
 
 		if (count($errors) > 0)
 		{
-			throw new Laborious\Exception\ValidationException(
+			throw new Exception\ValidationException(
 				"Error when validating ".self::class,
 				$errors
 			);
@@ -549,12 +549,12 @@ class Model {
 			return $this->loadModelFromString($model, $prefix);
 		}
 
-		elseif ($model instanceof \Laborious\Model)
+		elseif ($model instanceof Model)
 		{
 			return $this->loadModelFromObject($model, $prefix);
 		}
 
-		throw new \Laborious\Exception\LaboriousException(
+		throw new Exception\LaboriousException(
 			"\$model must be a Model or a string."
 		);
 	}
