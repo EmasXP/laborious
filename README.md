@@ -260,7 +260,7 @@ $sql = "
 		".(new User($db))->getSelectString("users")."
 	FROM `posts`
 	LEFT JOIN `users` ON `users`.`id` = `posts`.`user_id`
-"
+";
 ```
 
 We are here using the `getSelectString()` helper method to build parts of the `SELECT` statement.
@@ -308,6 +308,94 @@ Would produce:
 ```
 
 These two examples might be a bit dangerous if you are not careful, and in most (if not all) scenarios, they will not be used.
+
+### Loading the model
+
+```php
+$sql = "
+	SELECT
+		`posts`.*,
+		".(new User($db))->getSelectString("users").",
+		".(new Country($db))->getSelectString("users:countries").",
+	FROM `posts`
+	LEFT JOIN `users` 
+		ON `users`.`id` = `posts`.`user_id`
+	LEFT JOIN `countries` AS `users:countries` 
+		ON `users:countries`.`id` = `users`.`country_id`
+	LIMIT 1
+";
+
+$post = new Post(
+	$db,
+    $db->query($sql)->fetch()
+);
+
+print $post->title;
+
+$user = $post->loadModel(
+	\User::class,
+    "users"
+);
+
+print $user->email;
+
+$country = $country->loadModel(
+	\Country::class,
+    "countries"
+);
+
+print $country->name;
+
+```
+
+Let's go through what's happening:
+
+* We are fetching all columns from `posts`, all columns needed for `User` and `Country`.
+  * We are telling the `User` to look for the `"users"` prefix, since we are joining `users` without an `AS` alias. The selects are going to be `users.id AS users:id` and so on.
+  * We are telling `Country` to look for the `"users:conntries"` prefix, since we are joining `countries AS users:countries`. This is a good convention to have multiple suffixes when joining multiple levels. The selects are going to be `users:countries.id AS users:countries:id` and so on.
+* We are creating a `Post` object by executing the query.
+* We are calling `loadModel()`  on the `$post` object to load a `User` by passing `\User:class`. We are specifying that all the fields prefixed with `"users"` will be passed over to the new `User` object.
+* We are calling `loadModel()` on the `$country` object to load a `Country` by passing `\Country:class`. We are specifying that all the fields prefixed with `"countries"` will be passed over to the new `Country` object.
+
+In this example above we are passing all the `Country` (`users:countries`) fields to the `User` object when we are loading the `User` object. This works because both `users:*` and `users:coutries:*` (where the `*` is all the field names) have the prefix `users`. The fields in the `User` object will be (for example) `id` and `countries:id` since the prefix is stripped.
+
+This means that we can load the `Country` object directly from the `Post` object:
+
+```php
+$post = new Post(
+	$db,
+    $db->query($sql)->fetch()
+);
+
+print $post->title;
+
+$country = $post->loadModel(
+	\Country::class,
+    "users:countries"
+);
+
+print $country->name;
+```
+
+### Loading by string or object
+
+In the examples above we are using `\User::class`  and `\Country::class` when calling `loadModel()`. Those are simply generating strings that becomes `"\User"` and `"\Country"`. Using the `::class` helper only makes sure that the string is correct.
+
+You can also pass an object to `loadModel()` if you want to. This is a tiny bit slower than passing the string, and you need to make sure that the object passed is not loaded (with previous information).
+
+```php
+// By string
+$user = $post->loadModel(
+	\User::class,
+    "users"
+);
+
+// By object
+$user = $post->loadModel(
+	new User($db),
+    "users"
+);
+```
 
 ## Contribute
 
