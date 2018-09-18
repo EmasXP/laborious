@@ -423,6 +423,22 @@ $new_user->id = 12; // if "id" is the primary key
 $new_user->isLoaded(); // true
 ```
 
+#### delete()
+
+Deletes the row in the database. A `\Laborious\Exception\LaboriousException` exception is thrown if trying to delete a non-loaded model:
+
+```php
+try
+{
+    $user->delete();
+    print "Deleted!";
+}
+catch (\Laborious\Exception\LaboriousException $e)
+{
+    print $e->getMessage();
+}
+```
+
 ## Contribute
 
 There are two main areas where help is needed:

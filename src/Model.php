@@ -444,8 +444,9 @@ class Model {
 
 		if ($primary_id === null)
 		{
-			// TODO: Throw exception
-			return $this;
+			throw new Exception\LaboriousException(
+				"The model is not loaded."
+			);
 		}
 
 		$this->_db->executeDelete(

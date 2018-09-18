@@ -123,4 +123,14 @@ final class ModelTest extends TestCase {
 		$this->assertFalse($user->isLoaded());
 	}
 
+
+	/**
+	 * @expectedException \Laborious\Exception\LaboriousException
+	 */
+	public function testExceptionDeletingNonLoaded()
+	{
+		$user = new DummyUser($this->db);
+		$user->delete();
+	}
+
 }
