@@ -14,37 +14,6 @@ class Model {
 	protected $_original_values = array();
 
 
-	public function getSelectString($table, $as_prefix = null)
-	{
-		$columns = array();
-
-		foreach (static::$_fields as $field)
-		{
-			$select = "";
-
-			if ($table !== null)
-			{
-				$select .= "`$table`.";
-			}
-
-			$select .= "`$field`";
-
-			if ($as_prefix !== null)
-			{
-				$select .= " AS `$as_prefix:$field`";
-			}
-			elseif ($table !== null)
-			{
-				$select .= " AS `$table:$field`";
-			}
-
-			$columns[] = $select;
-		}
-
-		return implode(", ", $columns);
-	}
-
-
 	public function __construct($db, $values = array())
 	{
 		$this->_db = $db;
@@ -481,6 +450,37 @@ class Model {
 	public function isLoaded()
 	{
 		return ($this->get(static::$_primary) !== null);
+	}
+
+
+	public function getSelectString($table, $as_prefix = null)
+	{
+		$columns = array();
+
+		foreach (static::$_fields as $field)
+		{
+			$select = "";
+
+			if ($table !== null)
+			{
+				$select .= "`$table`.";
+			}
+
+			$select .= "`$field`";
+
+			if ($as_prefix !== null)
+			{
+				$select .= " AS `$as_prefix:$field`";
+			}
+			elseif ($table !== null)
+			{
+				$select .= " AS `$table:$field`";
+			}
+
+			$columns[] = $select;
+		}
+
+		return implode(", ", $columns);
 	}
 
 
