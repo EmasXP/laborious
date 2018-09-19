@@ -151,11 +151,25 @@ class Model {
 			|| $values === false
 		)
 		{
-			$values = array();
+			$this->_values = array();
+			return $this;
 		}
 
-		$this->_values = $values;
-		return $this;
+		elseif (is_array($values))
+		{
+			$this->_values = $values;
+			return $this;
+		}
+
+		elseif (is_object($values))
+		{
+			$this->_values = (array)$values;
+			return $this;
+		}
+
+		throw new Exception\LaboriousException(
+			"The \$values must be an array or an object."
+		);
 	}
 
 
