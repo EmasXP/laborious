@@ -146,6 +146,14 @@ class Model {
 
 	public function setRawValues($values)
 	{
+		if (
+			$values === null
+			|| $values === false
+		)
+		{
+			$values = array();
+		}
+
 		$this->_values = $values;
 		return $this;
 	}
