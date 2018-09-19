@@ -1,14 +1,16 @@
-- Throw exception in delete() on non-loaded objects.
-- Model::reload()
-- Model::loaded()
-- Model::loadModel()
 - Iterator::asArray()
 - ForwardIterator::asArray()
 - Connection:
-	- Support for NULL in SET, WHERE and so on.
 	- Quote table and column names (PDO does not support this)
-- Possibility to pass objects instead of dictionaries to _construct().
 - loadModelFromObject() should check if loaded(), populating a loaded object is dangerous and should not be allowed.
+- hasPrefix()
+- hasPrefix() in combination with MetaData
+- Rename exceptions?
+	- Labourious/Exception
+	- Labourious/Exception/Database
+	- Labourious/Exception/Validation
+- Suggest PDO attributes
+	- Write about what happens when objects are passed
 
 TESTS TO WRITE:
 - loadModel(): Fetching the correct rows.
@@ -17,9 +19,12 @@ TESTS TO WRITE:
 - Connection::buildWhere() with NULL.
 - Connection::executeUpdate() with NULL.
 - Connection::executeInsert() with NULL.
+- Pass NULL to setRawValues() and __construct()
+- Pass object to setRawValues() and __construct()
+- Verify that reload() empties changes
 
 TO CHECK:
-- Can the model receive PDO objects (not assoc arrays)
+- loadModelFromObject() might be faster using setRawValues() now when the implementation of that method has changed.
 
 TO CONSIDER:
 - Model::getFields() - or maybe it should be called getColumns()
