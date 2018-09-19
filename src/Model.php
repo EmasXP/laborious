@@ -17,7 +17,7 @@ class Model {
 	public function __construct($db, $values = array())
 	{
 		$this->_db = $db;
-		$this->_values = $values;
+		$this->setRawValues($values);
 	}
 
 
@@ -144,31 +144,9 @@ class Model {
 	}
 
 
-	public function setRawValues($values, $fields = null)
+	public function setRawValues($values)
 	{
-		if (
-			$fields === null
-			&& (
-				$this->_values === null
-				|| count($this->_values) == 0
-			)
-		)
-		{
-			$this->_values = $values;
-			return $this;
-		}
-
-		foreach ($values as $key => $val)
-		{
-			if (
-				$fields === null
-				|| in_array($key, $fields)
-			)
-			{
-				$this->_values[$key] = $val;
-			}
-		}
-
+		$this->_values = $values;
 		return $this;
 	}
 
