@@ -25,6 +25,7 @@ First we need to create the connection:
 ```php
 $db = new \Laborious\Connection("mysql:host=localhost;dbname=database;charset=utf8", "user", "pass");
 $db->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+$db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 ```
 
 `Laborious\Connection` extends `PDO`, and adds a some methods to make it easier for the model layer to execute queries.
@@ -241,9 +242,9 @@ Examples:
 * Query result and create model inside the iteration.
 * Query result and create an iterator.
 
-## Relations
+## Relationships
 
-Laborious does not have model relations per se, but have the ability to load related models by prefix.
+Laborious does not have model relationships per se, but have the ability to load related models by prefix.
 
 Let's say we have three models:
 
@@ -466,7 +467,7 @@ $sql = "
 ";
 
 $user = new User(
-    $this->db,
+	$this->db,
 	$this->db->query($sql)->fetch()
 );
 
@@ -490,13 +491,13 @@ $sql = "
 ";
 
 $user = new User(
-    $this->db,
+	$this->db,
 	$this->db->query($sql)->fetch()
 );
 
 $country = $user->loadModel(
 	\Country::class,
-    "countries"
+	"countries"
 );
 
 $country->isLoaded(); // true
@@ -507,10 +508,10 @@ $country->isLoaded(); // Still true since it was created before reload()
 
 $new_country =  $user->loadModel(
 	\Country::class,
-    "countries"
+	"countries"
 );
 
-$country->isLoaded(); // false, the "countries" prefix is gone.
+$new_country->isLoaded(); // false, the "countries" prefix is gone.
 ```
 
 ## Contribute
