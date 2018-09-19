@@ -489,6 +489,7 @@ class Model {
 
 		$this->_values = null;
 
+		$this->clearChanged();
 		$this->setRawValues($data);
 
 		return $this;
